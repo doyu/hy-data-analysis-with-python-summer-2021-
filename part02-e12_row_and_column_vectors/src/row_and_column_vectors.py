@@ -3,10 +3,10 @@
 import numpy as np
 
 def get_row_vectors(a):
-    return []
+    return np.split(a, tuple(n for n in range(1, a.shape[0])))
 
 def get_column_vectors(a):
-    return []
+    return np.split(a, tuple(n for n in range(1, a.shape[1])), axis=1)
 
 def main():
     np.random.seed(0)
