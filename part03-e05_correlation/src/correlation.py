@@ -8,10 +8,13 @@ def load():
     return pd.read_csv("src/iris.csv").drop('species', axis=1).values
 
 def lengths():
-    return 0
+    d = load()
+    cr = scipy.stats.pearsonr(d[:,0], d[:,2])[0]
+    return cr
 
 def correlations():
-    return np.array([])
+    d = load()
+    return np.corrcoef(d, rowvar=False)
 
 def main():
     print(lengths())
