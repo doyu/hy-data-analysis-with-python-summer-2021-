@@ -4,41 +4,33 @@ import pandas as pd
 import numpy as np
 
 def last_week():
-    df = pd.read_csv('src/UK-top40-1964-1-2.tsv', sep='\t')
-
-    # Modify values in last week column and clear entries that weren't on last week's list
-    df.loc[df.LW == 'New', 'LW'] = '1000'
-    df.loc[df.LW == 'Re', 'LW'] = '1000'
-    df.LW = df.LW.astype('int')
-    indices = df.index[df.LW == 1000].tolist()
-    df.iloc[indices] = np.nan
-
-    df['Peak Pos'].mask((df.LW > df['Peak Pos']) & (df.Pos == df['Peak Pos']), inplace=True)
-
-    # Create New DataFrame of last week
+    df = pd.read_csv("src/UK-top40-1964-1-2.tsv", sep="\t")
+    orig_columns = df.columns
+    re_or_new = (df["LW"] == "Re") | (df["LW"] == "New")
+    df = df[~re_or_new]
+    df.LW = df.LW.astype(int)
+    second_time = df["WoC"] == 2
+    on_the_peak_last_week = second_time & ((df.Pos < df["Peak Pos"]) | (df["Peak Pos"] == 40))
     last_week = df.copy()
     last_week.Pos = df.LW
-
-    # Clear the whole LW column in last_week,
-    # because we can't know positions of songs from two weeks ago
-    last_week.LW = None
-
-    # Find missing positions
-    all_positions = set(range(1,41))
-    existing_positions = set(last_week.Pos[pd.notna(last_week.Pos)].tolist())
-    missing_positions = list(all_positions - existing_positions)
-
-    # Insert missing positions into last_week
-    last_week.loc[pd.isna(last_week.Pos), 'Pos'] = missing_positions
-
-    # Sort last_week based on the position column and reset indices
-    last_week.sort_values('Pos', axis='index', inplace=True)
-    last_week.reset_index(inplace=True, drop=True)
-
-    # Subtract one from WOC, weeks on chart
-    last_week.WoC = last_week.WoC -1
-
-    return last_week
+    last_week.LW = df.where(on_the_peak_last_week)["Peak Pos"]
+    last_week.WoC = df.WoC - 1
+    last_week["Peak Pos"] = df["Peak Pos"].where((df.Pos != df["Peak Pos"]) |
+                                                 ((df.Pos == df["Peak Pos"]) &
+                                                  (df.LW == df["Peak Pos"])),
+                                                 df.LW.where(df.WoC == 2))
+    #print(df)
+    #print(df.dtypes)
+    s = set(range(1, 41)).difference(set(last_week.Pos))
+    unknown = pd.DataFrame(list(s), columns=["Pos"])
+    #print(unknown)
+    version = list(map(int, pd.__version__.split(".")))
+    if version[0] == 0 and version[1] < 23:   # older Pandas versions don't support sort option
+        last_week = pd.concat([last_week, unknown], ignore_index=True)
+    else:
+        last_week = pd.concat([last_week, unknown], ignore_index=True, sort=False)
+    last_week = last_week[orig_columns]
+    return last_week.sort_values(by="Pos", axis=0)
 
 def main():
     df = last_week()
