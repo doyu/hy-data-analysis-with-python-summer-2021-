@@ -22,6 +22,7 @@ def cleaning_data():
                                (df['Vice-president'].str.split(',', expand=True)[1] + " "
                                 + df['Vice-president'].str.split(",", expand=True)[0]),
                                axis=0, inplace=True)
+ero
     df["Vice-president"] = df["Vice-president"].str.strip()
     df["Vice-president"] = df["Vice-president"].str.title()
     return df
