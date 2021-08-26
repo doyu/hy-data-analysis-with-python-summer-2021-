@@ -3,7 +3,11 @@
 import pandas as pd
 
 def main():
-    return
+    df = pd.read_csv("src/municipal.tsv", sep='\t')
+    print("Shape: %d,%d" % (df.shape[0],  df.shape[1]))
+    print("Columns:")
+    for x in df.columns:
+        print(x)
 
 
 if __name__ == "__main__":
