@@ -10,11 +10,7 @@
 # find_matching(["sensitive", "engine", "rubbish", "comment"], "en") should return the list [0, 1, 3].
 
 def find_matching(L, pattern):
-    ret = []
-    for i, x in enumerate(L):
-        if pattern in x:
-            ret.append(i)
-    return ret
+    return [i for i, x in enumerate(L) if pattern in x]
 
 def main():
     print(find_matching(["sensitive", "engine", "rubbish", "comment"], "en"))

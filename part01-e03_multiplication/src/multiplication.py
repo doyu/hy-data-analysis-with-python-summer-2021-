@@ -13,9 +13,7 @@
 # 4 multiplied by 10 is 40
 
 def main():
-    # Enter your solution here
-    for x in range(0, 11):
-        print("4 multiplied by", x, "is", 4*x)
+    [print(f"4 multiplied by {x} is {4*x}") for x in range(0, 11)]
 
 if __name__ == "__main__":
     main()

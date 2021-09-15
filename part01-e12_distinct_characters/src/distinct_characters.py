@@ -13,11 +13,9 @@
 
 
 def distinct_characters(L):
-    l = L[:]
     d = {}
-    while l != []:
-        x = l.pop(0)
-        d[x] = len(set(list(x)))
+    for x in L:
+        d[x] = len(set(x))
     return d
 
 def main():
