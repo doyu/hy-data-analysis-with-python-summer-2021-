@@ -1,0 +1,7 @@
+In exercise 7 the groups that are supposed to be used are the youngest (sAGE=-1.0), middle aged (sAGE=0.0), and oldest (sAGE=1.0). Your solution has youngest (sAGE=-0.5), middle aged (sAGE=0.0), and oldest (sAGE=0.5). Actually, the same happens in exercise 8. Anyway, plots look great and clearly you can create correct answer to these exercises. The interpretation of plots isn’t exactly correct since the dependence of blood pressure on weight is actually getting smaller as person gets older. You can see from the plots, that for older people, the intercept is already at higher level, which means that with low weight they already have higher blood pressure. The dependency slope is lower with older people.
+
+In exercise 11 I made a bit different plots, but I’m not totally sure what is the one we are aiming here. Anyway, the curve that we make here shows the probability distribution of different age groups to have high blood pressure considering their weight. It doesn’t tell (as amount) how many of older people have high blood pressure. Not sure if I was able to explain this clearly.
+
+In exercise 15 I believe the error rate should be calculated once, and its around 0.22. But the accuracy could be analyzed this way too!
+
+In exercise 16 I would prefer to show the whole distribution. Change X for example to X = np.linspace(-10,15,100) and test the result. Also, further analyzing of the model would be informative.
