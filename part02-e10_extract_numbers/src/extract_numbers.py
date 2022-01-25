@@ -15,19 +15,19 @@ Example run: print(extract_numbers("abd 123 1.2 test 13.2 -1")) will
 return [123, 1.2, 13.2, -1]
 
 '''
+from functools import reduce
 
 def extract_numbers(s):
-    ret = []
-    l = s.split()
-    for x in l:
+    def f(ac, el):
         try:
-            ret.append(int(x))
-        except Exception:
+            ac.append(int(el))
+        except:
             try:
-                ret.append(float(x))
-            except Exception:
+                ac.append(float(el))
+            except:
                 pass
-    return ret
+        return ac
+    return reduce(f, s.split(), [])
 
 def main():
     print(extract_numbers("abd 123 1.2 test 13.2 -1"))
