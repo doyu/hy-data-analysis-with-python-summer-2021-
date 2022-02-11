@@ -4,33 +4,35 @@ import pandas as pd
 import numpy as np
 
 def last_week():
-    df = pd.read_csv("src/UK-top40-1964-1-2.tsv", sep="\t")
-    orig_columns = df.columns
-    re_or_new = (df["LW"] == "Re") | (df["LW"] == "New")
-    df = df[~re_or_new]
-    df.LW = df.LW.astype(int)
-    second_time = df["WoC"] == 2
-    on_the_peak_last_week = second_time & ((df.Pos < df["Peak Pos"]) | (df["Peak Pos"] == 40))
-    last_week = df.copy()
-    last_week.Pos = df.LW
-    last_week.LW = df.where(on_the_peak_last_week)["Peak Pos"]
-    last_week.WoC = df.WoC - 1
-    last_week["Peak Pos"] = df["Peak Pos"].where((df.Pos != df["Peak Pos"]) |
-                                                 ((df.Pos == df["Peak Pos"]) &
-                                                  (df.LW == df["Peak Pos"])),
-                                                 df.LW.where(df.WoC == 2))
-    #print(df)
-    #print(df.dtypes)
-    s = set(range(1, 41)).difference(set(last_week.Pos))
+    tw = pd.read_csv("src/UK-top40-1964-1-2.tsv", sep="\t")
+    tw = tw.rename(columns={'Peak Pos':'Peak'})
+    tw = tw[(tw.LW!="Re") & (tw.LW!="New")]
+    tw.LW = tw.LW.astype(int)
+
+    lw = tw.copy()
+    lw.Pos = tw.LW
+
+    # Peak at 2 weeks ago -> lw.LW == tw.Peak
+    on_the_peak_llw = (tw.WoC == 3) & ((tw.Pos > tw.Peak) & (tw.LW > tw.Peak))
+    lw.LW = np.where(on_the_peak_llw, tw.Peak, np.nan)
+
+    # Updating WoC
+    lw.WoC -= 1
+
+    # Updating Peak
+    c1 = (tw.Pos != tw.Peak) # Peak was not in this week -> lw.Peak==th.Peak
+    c2 = (tw.Pos == tw.Peak) & (tw.LW == tw.Peak) # th.Pos==tw.LW==tw.Peak -> lw.Peak==th.Peak
+    lw.Peak = np.where(c1|c2, tw.Peak,
+                       np.where(tw.WoC==2, tw.LW, np.nan)) # Otherwise, tw.LW if WoC==2 else don't know
+    
+    # Adding empty columns
+    s = set(range(1, 41)).difference(set(lw.Pos))
     unknown = pd.DataFrame(list(s), columns=["Pos"])
-    #print(unknown)
-    version = list(map(int, pd.__version__.split(".")))
-    if version[0] == 0 and version[1] < 23:   # older Pandas versions don't support sort option
-        last_week = pd.concat([last_week, unknown], ignore_index=True)
-    else:
-        last_week = pd.concat([last_week, unknown], ignore_index=True, sort=False)
-    last_week = last_week[orig_columns]
-    return last_week.sort_values(by="Pos", axis=0)
+    lw = pd.concat([lw, unknown], ignore_index=True)
+    lw = lw.sort_values(by="Pos")
+
+    lw = lw.rename(columns={'Peak':'Peak Pos'})
+    return lw
 
 def main():
     df = last_week()
