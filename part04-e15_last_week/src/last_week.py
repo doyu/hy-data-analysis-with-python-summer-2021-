@@ -13,17 +13,22 @@ def last_week():
     lw.Pos = tw.LW
 
     # Peak at 2 weeks ago -> lw.LW == tw.Peak
-    on_the_peak_llw = (tw.WoC == 3) & ((tw.Pos > tw.Peak) & (tw.LW > tw.Peak))
-    lw.LW = np.where(on_the_peak_llw, tw.Peak, np.nan)
+    f = lambda x: x.Peak if (x.WoC == 3) & ((x.Pos > x.Peak) & (x.LW > x.Peak)) else np.nan
+    lw.LW = tw.apply(f, axis=1)
 
     # Updating WoC
     lw.WoC -= 1
 
     # Updating Peak
-    c1 = (tw.Pos != tw.Peak) # Peak was not in this week -> lw.Peak==th.Peak
-    c2 = (tw.Pos == tw.Peak) & (tw.LW == tw.Peak) # th.Pos==tw.LW==tw.Peak -> lw.Peak==th.Peak
-    lw.Peak = np.where(c1|c2, tw.Peak,
-                       np.where(tw.WoC==2, tw.LW, np.nan)) # Otherwise, tw.LW if WoC==2 else don't know
+    def f(r):
+        if (r.Pos != r.Peak):
+            return r.Peak
+        if (r.Pos == r.Peak) & (r.LW == r.Peak):
+            return r.Peak 
+        if r.WoC==2:
+            return r.LW
+        return np.nan
+    lw.Peak = tw.apply(f, axis=1)
     
     # Adding empty columns
     s = set(range(1, 41)).difference(set(lw.Pos))
