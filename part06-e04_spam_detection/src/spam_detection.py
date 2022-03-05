@@ -31,33 +31,35 @@ def spam_detection(random_state=0, fraction=0.01):
     # only fraction of lines from the start of the file, where fraction is
     # a parameter to "spam_detection()", and should be in the range [0.0, 1.0].
     with gzip.open("src/ham.txt.gz", 'r') as f:
-        ham = np.array(list(f))
-    ham = ham[:int(fraction * len(ham))]
+        ham = f.readlines()
+        ham = ham[:int(fraction * len(ham))]
 
     with gzip.open("src/spam.txt.gz", 'r') as f:
-        spam = np.array(list(f))
-    spam = spam[:int(fraction*len(spam))]
+        spam = f.readlines()
+        spam = spam[:int(fraction*len(spam))]
 
     # use labels 0 for ham and 1 for spam
-    X = np.concatenate((ham, spam))
-    y = np.hstack(([0] * len(ham), [1] * len(spam)))
+    X = np.concatenate([ham, spam])
+    y = np.concatenate([[0]*len(ham), [1]*len(spam)])
+    print(X.shape, y.shape)
 
     # forms the combined feature matrix using CountVectorizer class’
     # fit_transform method. The feature matrix should first have the rows
     # for the ham dataset and then the rows for the spam dataset. One row
     # in the feature matrix corresponds to one email.
-    cv = CountVectorizer()
-    features = cv.fit_transform(X)
+    features = CountVectorizer().fit_transform(X)
+    print(features.shape)
 
     # divide that feature matrix and the target label into training and
     # test sets, using train_test_split. Use 75% of the data for training.
     # Pass the random_state parameter from spam_detection to
     # train_test_split.
-    Xtrain, Xtest, ytrain, ytest = train_test_split(features, y, random_state=random_state, train_size=0.75)
+    Xtrain, Xtest, ytrain, ytest = train_test_split(
+        features, y, random_state=random_state, train_size=0.75)
+    print(Xtrain.shape, Xtest.shape, ytrain.shape, ytest.shape)
 
     # train a MultinomialNB model, and use it to predict the labels for the test set
-    model = MultinomialNB()
-    model.fit(Xtrain, ytrain)
+    model = MultinomialNB().fit(Xtrain, ytrain)
     acc = metrics.accuracy_score(ytest, model.predict(Xtest))
 
     # The function should return a triple consisting of
@@ -67,7 +69,7 @@ def spam_detection(random_state=0, fraction=0.01):
     return acc, len(ytest), int((1-acc) * len(ytest))
 
 def main():
-    accuracy, total, misclassified = spam_detection()
+    accuracy, total, misclassified = spam_detection(fraction=0.1)
     print("Accuracy score:", accuracy)
     print(f"{misclassified} messages miclassified out of {total}")
 

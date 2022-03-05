@@ -26,7 +26,8 @@ def extract_numbers(s):
                 ac.append(float(el))
             except:
                 pass
-        return ac
+        finally:
+            return ac
     return reduce(f, s.split(), [])
 
 def main():

@@ -27,6 +27,13 @@ a = np.array(
 
 def most_frequent_first(a, c):
     v, i, n = np.unique(a[:,c], return_counts=True, return_inverse=True)
+    print(f"v={v}")
+    print(f"i={i}")
+    print(f"n={n}\n")
+    print(f"{v[i]} # original")    
+    print(f"{n[i]} # counters along original")
+    print(f"{np.sort(n[i])} # sort raw counters")
+    print(f"{np.argsort(n[i])} # get sorted counter index")
     return a[np.argsort(n[i])[::-1]]
 
 def main():

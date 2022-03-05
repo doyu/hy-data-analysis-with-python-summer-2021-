@@ -17,7 +17,8 @@ def cycling_data():
     p.Weekday, p.Month = p.Weekday.map(days), p.Month.map(months)
     p = p.astype({"Weekday": object, "Day": int, "Month": int, "Year": int, "Hour": int})
     df = pd.concat([p, df.iloc[:,1:]], axis=1)
-    df = df.groupby(["Year", "Month", "Day"]).sum().reset_index()
+#    df = df.groupby(["Year", "Month", "Day"]).sum().reset_index()
+    df = df.groupby(["Year", "Month", "Day"]).sum()
     return df
 
 def weather_data():

@@ -5,8 +5,9 @@ import numpy as np
 import scipy.linalg
 
 def vector_angles(X, Y):
-    a = np.sum(X * Y) / (scipy.linalg.norm(X) * scipy.linalg.norm(Y))
-    return np.rad2deg(np.arccos(np.clip(a, -1.0, 1.0)))
+    a = np.sum(X * Y) / (np.sqrt((X**2).sum()) * np.sqrt((Y**2).sum()))
+    return np.arccos(np.clip(a, -1.0, 1.0)) * 360 / (2*np.pi)
+
 
 def main():
     A=np.array([[0,0,1], [-1,1,0]])
